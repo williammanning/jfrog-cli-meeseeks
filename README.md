@@ -1,4 +1,4 @@
-# hello-frog
+# Meeseeks
 
 ## About this plugin
 This plugin is a template and a functioning example for a basic JFrog CLI plugin. 
@@ -7,15 +7,15 @@ This README shows the expected structure of your plugin's README.
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install hello-frog`
+`$ jfrog plugin install meeseeks`
 
 Installing a specific version:
 
-`$ jfrog plugin install hello-frog@version`
+`$ jfrog plugin install meeseeks@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall hello-frog`
+`$ jfrog plugin uninstall meeseeks`
 
 ## Usage
 ### Commands
