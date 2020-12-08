@@ -25,5 +25,6 @@ func getCommands() []components.Command {
 		commands.GetRepoList(),
 		commands.GetStorage(),
 		commands.GetPing(),
+		commands.SpawnMeeseekUI(),
 	}
 }
