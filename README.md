@@ -26,15 +26,51 @@ Uninstalling a plugin
 * info
 
   * Arguments:
-    * addressee - The name of the person you would like to greet.
+    * server-id - Default Server ID from JFrog CLI Config.
   * Flags:
-        *shout: Makes output uppercase **[Default: false]**
-        *repeat: Greets multiple times **[Default: 1]**
-    * Example:
+    *ServerIdFlag: Artifactory server ID configured using the config command. **[Default: false]**
+  * Example:
+    * need to add
+
+* storage
+
+  * Arguments:
+    * server-id - Default Server ID from JFrog CLI Config.
+  * Flags:
+    *ServerIdFlag: Artifactory server ID configured using the config command. **[Default: false]**
+  * Example:
+    * need to add
+
+* repo
+
+  * Arguments:
+    * server-id - Default Server ID from JFrog CLI Config.
+  * Flags:
+    *ServerIdFlag: Artifactory server ID configured using the config command. **[Default: false]**
+  * Example:
+    * need to add
+
+* ping
+
+  * Arguments:
+    * server-id - Default Server ID from JFrog CLI Config.
+  * Flags:
+    *ServerIdFlag: Artifactory server ID configured using the config command. **[Default: false]**
+  * Example:
+    * need to add
+
+* spawn
+
+  * Arguments:
+    * server-id - Default Server ID from JFrog CLI Config.
+  * Flags:
+    *ServerIdFlag: Artifactory server ID configured using the config command. **[Default: false]**
+  * Example:
+    * need to add
 
 ### Environment variables
 
-* HELLO_FROG_GREET_PREFIX - Adds a prefix to every greet **[Default: New greeting: ]**
+* None
 
 ## Additional info
 
