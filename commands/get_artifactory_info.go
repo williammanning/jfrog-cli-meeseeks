@@ -77,12 +77,13 @@ func getArtifactoryInfoCmd(c *components.Context) error {
 	}
 
 	fmt.Print(rtDetails)
-	connectArtifactoryConfig(rtDetails)
+	getArtifactoryInfo(rtDetails)
 	return nil
 }
 
-func connectArtifactoryConfig(rtDetails *config.ArtifactoryDetails) {
+func getArtifactoryInfo(rtDetails *config.ArtifactoryDetails) {
 	fmt.Print("Get Details")
+	var jsonbody = ""
 	artAuth, err := rtDetails.CreateArtAuthConfig()
 
 	if err != nil {
@@ -114,7 +115,11 @@ func connectArtifactoryConfig(rtDetails *config.ArtifactoryDetails) {
 		errors.New("Artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body))
 		return
 	} else {
-		fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
+		//fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
+		jsonbody = clientutils.IndentJson(body)
+		fmt.Print(jsonbody)
 	}
+
+	return
 
 }

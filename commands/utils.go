@@ -71,7 +71,8 @@ func checkInputs(c *components.Context) error {
 
 // Returns the Artifactory Details of the provided server-id, or the default one.
 func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
-	details, err := commands.GetConfig(c.GetStringFlagValue("server-id"), false)
+	serverID := c.GetStringFlagValue("server-id")
+	details, err := commands.GetConfig(serverID, false)
 	if err != nil {
 		return nil, err
 	}
