@@ -94,7 +94,7 @@ func connectArtifactoryStorageAPI(rtDetails *config.ArtifactoryDetails) {
 	}
 
 	fmt.Print(artAuth.GetUrl())
-	restApi := path.Join("api", "repositories")
+	restApi := path.Join("api", "storageinfo")
 
 	requestFullUrl, err := servicesutils.BuildArtifactoryUrl(artAuth.GetUrl(), restApi, nil)
 
