@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/williammanning/jfrog-cli-meeseeks/utils"
 
 	"fmt"
@@ -17,6 +18,7 @@ import (
 )
 
 // Get Artifactory Information of current default instance in CLI
+var newArtDetails *config.ArtifactoryDetails
 
 func SpawnMeeseekUI() components.Command {
 	return components.Command{
@@ -71,14 +73,16 @@ func spawnMeeseekCmd(c *components.Context) error {
 	var conf = new(ArtifactoryInfoConfiguration)
 	conf.server = c.Arguments[0]
 	rtDetails, err := utils.GetRtDetails(c)
-	fmt.Printf("conf.Server %s\n", conf.server)
+	fmt.Printf("Spawn conf.Server %s\n", conf.server)
+
+	newArtDetails = rtDetails
 
 	if err != nil {
 		return err
 	}
 
 	fmt.Print(rtDetails)
-//	connectArtifactoryRepo(rtDetails)
+	//	connectArtifactoryRepo(rtDetails)
 
 	//	fileServer := http.FileServer(http.Dir("./web"))
 	http.HandleFunc("/", httpserver)
@@ -98,7 +102,7 @@ func generateBarItems() []opts.BarData {
 	return items
 }
 
-func barGraph(w http.ResponseWriter) {
+func barGraph(w http.ResponseWriter, artInfo string) {
 	// create a new bar instance
 	bar := charts.NewBar()
 	// set some global options like Title/Legend/ToolTip or anything else
@@ -108,7 +112,7 @@ func barGraph(w http.ResponseWriter) {
 	}))
 
 	// Put data into instance
-	bar.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
+	bar.SetXAxis([]string{artInfo, "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
 		AddSeries("Category A", generateBarItems()).
 		AddSeries("Category B", generateBarItems())
 	// Where the magic happens
@@ -147,12 +151,16 @@ func generateLineItems() []opts.LineData {
 
 func httpserver(w http.ResponseWriter, r *http.Request) {
 
-//	repolist := connectArtifactoryRepo(rtDetails)
+	//	repolist := connectArtifactoryRepo(rtDetails)
 
-//	fmt.Printf("Processing chart metadata based on previous query..\n%s\n", storage)
-	
-	//	meeseeksWelcome(w)
-	barGraph(w)
+	fmt.Printf("Processing chart metadata based on previous query..\n%s\n", newArtDetails.Url)
+
+	//var artInfo = getArtifactoryInfo(newArtDetails)
+	//var repoInfo = getArtifactoryRepo(newArtDetails)
+	var storageinfo = getArtifactoryStorageAPI(newArtDetails)
+	fmt.Printf(storageinfo)
+
+	barGraph(w, storageinfo)
 	lineGraph(w)
 
 	//pieGraph(w)

@@ -14,7 +14,7 @@ import (
 	"github.com/williammanning/jfrog-cli-meeseeks/utils"
 )
 
-const ServerIdFlag = "server-id"
+var jsonbody string
 
 // Get Artifactory Information of current default instance in CLI
 
@@ -66,7 +66,7 @@ func getArtifactoryInfoEnvVar() []components.EnvVar {
 
 func getArtifactoryInfoCmd(c *components.Context) error {
 	if !(len(c.Arguments) == 1 || len(c.Arguments) == 0) {
-		return errors.New("wrong number of arguments. Expected 1 arguments, or 0 with build details passed as environment variables")
+		return errors.New("wrong number of arguments. Expected 1 arguments, or 0 with build details passed as environment variables\n")
 	}
 	var conf = new(ArtifactoryInfoConfiguration)
 	conf.server = c.Arguments[0]
@@ -81,20 +81,19 @@ func getArtifactoryInfoCmd(c *components.Context) error {
 	return nil
 }
 
-func getArtifactoryInfo(rtDetails *config.ArtifactoryDetails) {
+func getArtifactoryInfo(rtDetails *config.ArtifactoryDetails) string {
 	fmt.Print("Get Details")
-	var jsonbody = ""
 	artAuth, err := rtDetails.CreateArtAuthConfig()
 
 	if err != nil {
-		return
+		return ""
 	}
 
 	httpClientsDetails := artAuth.CreateHttpClientDetails()
 	client, err := httpclient.ArtifactoryClientBuilder().SetServiceDetails(&artAuth).Build()
 
 	if err != nil {
-		return
+		return ""
 	}
 
 	fmt.Print(artAuth.GetUrl())
@@ -107,19 +106,18 @@ func getArtifactoryInfo(rtDetails *config.ArtifactoryDetails) {
 	resp, body, _, err := client.SendGet(requestFullUrl, true, &httpClientsDetails)
 
 	if err != nil {
-		return
+		return ""
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
 		errors.New("Artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body))
-		return
+		return ""
 	} else {
 		//fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
 		jsonbody = clientutils.IndentJson(body)
 		fmt.Print(jsonbody)
+		return jsonbody
 	}
-
-	return
 
 }

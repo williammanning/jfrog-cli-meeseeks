@@ -74,23 +74,23 @@ func getStorageCmd(c *components.Context) error {
 	}
 
 	fmt.Print(rtDetails)
-	connectArtifactoryStorageAPI(rtDetails)
+	getArtifactoryStorageAPI(rtDetails)
 	return nil
 }
 
-func connectArtifactoryStorageAPI(rtDetails *config.ArtifactoryDetails) {
+func getArtifactoryStorageAPI(rtDetails *config.ArtifactoryDetails) string {
 	fmt.Print("Get Details")
 	artAuth, err := rtDetails.CreateArtAuthConfig()
 
 	if err != nil {
-		return
+		return ""
 	}
 
 	httpClientsDetails := artAuth.CreateHttpClientDetails()
 	client, err := httpclient.ArtifactoryClientBuilder().SetServiceDetails(&artAuth).Build()
 
 	if err != nil {
-		return
+		return ""
 	}
 
 	fmt.Print(artAuth.GetUrl())
@@ -103,15 +103,18 @@ func connectArtifactoryStorageAPI(rtDetails *config.ArtifactoryDetails) {
 	resp, body, _, err := client.SendGet(requestFullUrl, true, &httpClientsDetails)
 
 	if err != nil {
-		return
+		return ""
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
 		errors.New("Artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body))
-		return
+		return ""
 	} else {
-		fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
+		//fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
+		jsonbody = clientutils.IndentJson(body)
+		fmt.Print(jsonbody)
+		return jsonbody
 	}
 
 }
