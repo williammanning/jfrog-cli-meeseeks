@@ -73,13 +73,13 @@ func getPingCmd(c *components.Context) error {
 		return err
 	}
 
-	fmt.Print(rtDetails)
+	fmt.Println(rtDetails)
 	connectArtifactoryPing(rtDetails)
 	return nil
 }
 
 func connectArtifactoryPing(rtDetails *config.ArtifactoryDetails) {
-	fmt.Print("Get Details")
+	//fmt.Println("Get Details")
 	artAuth, err := rtDetails.CreateArtAuthConfig()
 
 	if err != nil {
@@ -93,12 +93,12 @@ func connectArtifactoryPing(rtDetails *config.ArtifactoryDetails) {
 		return
 	}
 
-	fmt.Print(artAuth.GetUrl())
+	fmt.Println(artAuth.GetUrl())
 	restApi := path.Join("api", "system/ping")
 
 	requestFullUrl, err := servicesutils.BuildArtifactoryUrl(artAuth.GetUrl(), restApi, nil)
 
-	fmt.Print("Getting system info from: ", requestFullUrl)
+	fmt.Println("\nGetting system info from: ", requestFullUrl)
 
 	resp, body, _, err := client.SendGet(requestFullUrl, true, &httpClientsDetails)
 
@@ -107,11 +107,11 @@ func connectArtifactoryPing(rtDetails *config.ArtifactoryDetails) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
-		errors.New("Artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body))
+		fmt.Println("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
+		errors.New("Artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body) + " Existence is Pain!")
 		return
 	} else {
-		fmt.Print("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body))
+		fmt.Println("Return Ok: " + resp.Status + " " + clientutils.IndentJson(body) + " CAN DO!\n")
 	}
 
 }

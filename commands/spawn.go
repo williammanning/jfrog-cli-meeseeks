@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"os"
 
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
@@ -73,20 +74,26 @@ func spawnMeeseekCmd(c *components.Context) error {
 	var conf = new(ArtifactoryInfoConfiguration)
 	conf.server = c.Arguments[0]
 	rtDetails, err := utils.GetRtDetails(c)
-	fmt.Printf("Spawn conf.Server %s\n", conf.server)
-
 	newArtDetails = rtDetails
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Print(rtDetails)
+	//	fmt.Println(rtDetails)   // Debugging to validate correct RT config
 	//	connectArtifactoryRepo(rtDetails)
+
+	fmt.Printf("\nChecking connectivity to Artifactory before spawning UI agent..\n")
+	//var pingInfo = connectArtifactoryPing(newArtDetails.Url)
+	connectArtifactoryPing(newArtDetails)
 
 	//	fileServer := http.FileServer(http.Dir("./web"))
 	http.HandleFunc("/", httpserver)
-	fmt.Printf("Starting Meeseeks UI at port 8080\n")
+	fmt.Println("Spawning Meeseeks Dashboard at http://localhost:9033/admin/hello\n")
+	//fmt.Println("Spawning Meeseeks Dashboard at http://localhost:9033/admin/vue\n")
+	fmt.Println("Spawning Meeseeks UI agent at http://localhost:8080/  <--- Click me!\n")
+	fmt.Println("Generating reports from selected queries on", conf.server)
+
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
@@ -102,6 +109,11 @@ func generateBarItems() []opts.BarData {
 	return items
 }
 
+type Bins struct {
+	BinariesCount int
+	BinariesSize  int
+}
+
 func barGraph(w http.ResponseWriter, artInfo string) {
 	// create a new bar instance
 	bar := charts.NewBar()
@@ -111,13 +123,57 @@ func barGraph(w http.ResponseWriter, artInfo string) {
 		Subtitle: "Most recently published artifacts",
 	}))
 
+	// in := []byte(artInfo)
+	// var raw map[string]interface{}
+	// // if err := json.Unmarshal(in, &raw); err != nil {
+	// //     panic(err)
+	// // }
+	// raw["count"] = 1
+	// out, err := json.Marshal(raw)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// println(artInfo)
+
+	// var s Bins
+	// json.Unmarshal([]byte(str), &s)
+	// fmt.Println(s)
+
+	// type Bins struct {
+	// 		Name   string 'json:"binariesSummary"'
+	// 		Values []struct {
+	// 		BinariesCount int 'json:"binariesCount,omitempty"'
+	// 		BinariesSize int 'json:"binariesSize,omitempty"'
+	// 		ArtifactsSize    int 'json:"artifactsSize,omitempty"'
+	// 		Optimization   int 'json:"optimization,omitempty"'
+	// 	} 'json:"values"'
+
+	// b = []Bins{} // Summary
+	// json.Unmarshal(in, &b)
+	// println(b)
+
+	//var rtStorage rtData
+	//var dataArr = parse(artInfo);
+	//dataArr[0].fileStoreSummary
+
+	// storageType = dataArr[1].storageType
+	// fmt.Println("Storage type = %s", storageType)
+	// numArtifacts = dataArr[0].binariesSummary.artifactsCount
+
+	// fmt.Println("bxxxxx + %s", artInfo)
+	// err := json.Unmarshal([]byte(artInfo), &rtStorage)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// //fmt.Println(rtStorage.Name, rtStorage.fileStoreSummary, rtStorage.Id)
+
 	// Put data into instance
-	bar.SetXAxis([]string{artInfo, "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
+	bar.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
 		AddSeries("Category A", generateBarItems()).
 		AddSeries("Category B", generateBarItems())
 	// Where the magic happens
-	//	f, _ := os.Create("bar.html")
-	//	bar.Render(f) // Output to html file
+	f, _ := os.Create("artifacts.html")
+	bar.Render(f) // Output to html file
 	bar.Render(w) // Output to browser
 }
 
@@ -128,7 +184,7 @@ func lineGraph(w http.ResponseWriter) {
 	line.SetGlobalOptions(
 		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeWesteros}),
 		charts.WithTitleOpts(opts.Title{
-			Title:    "Cloud weekly transfers",
+			Title:    "Daily transfers",
 			Subtitle: "Line chart rendered by the http server this time",
 		}))
 
@@ -137,6 +193,9 @@ func lineGraph(w http.ResponseWriter) {
 		AddSeries("Category A", generateLineItems()).
 		AddSeries("Category B", generateLineItems()).
 		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
+
+	f, _ := os.Create("transfers.html")
+	line.Render(f) // Output to html file
 	line.Render(w)
 }
 
@@ -153,24 +212,24 @@ func httpserver(w http.ResponseWriter, r *http.Request) {
 
 	//	repolist := connectArtifactoryRepo(rtDetails)
 
-	fmt.Printf("Processing chart metadata based on previous query..\n%s\n", newArtDetails.Url)
-
 	//var artInfo = getArtifactoryInfo(newArtDetails)
-	//var repoInfo = getArtifactoryRepo(newArtDetails)
+
+	// Run the Storage query for parsing to generate a report/graph
 	var storageinfo = getArtifactoryStorageAPI(newArtDetails)
-	fmt.Printf(storageinfo)
+	//	fmt.Printf(storageinfo)
+
+	// Run the Repo query for parsing to generate a report/graph
+	//var repoInfo = getArtifactoryRepo(newArtDetails)
 
 	barGraph(w, storageinfo)
 	lineGraph(w)
 
-	//pieGraph(w)
-
-	if r.URL.Path != "/bar.html" {
+	if r.URL.Path != "/artifacts.html" {
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
 	}
 
-	if r.URL.Path != "/meeseeks.html" {
+	if r.URL.Path != "/transfers.html" {
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
 	}

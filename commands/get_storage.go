@@ -73,15 +73,15 @@ func getStorageCmd(c *components.Context) error {
 		return err
 	}
 
-	fmt.Print(rtDetails)
+	fmt.Println(rtDetails)
 	getArtifactoryStorageAPI(rtDetails)
 	return nil
 }
 
 func getArtifactoryStorageAPI(rtDetails *config.ArtifactoryDetails) string {
-	fmt.Print("Get Details")
-	artAuth, err := rtDetails.CreateArtAuthConfig()
+	fmt.Print("Get Details from ")
 
+	artAuth, err := rtDetails.CreateArtAuthConfig()
 	if err != nil {
 		return ""
 	}
@@ -93,12 +93,12 @@ func getArtifactoryStorageAPI(rtDetails *config.ArtifactoryDetails) string {
 		return ""
 	}
 
-	fmt.Print(artAuth.GetUrl())
+	fmt.Println(artAuth.GetUrl())
 	restApi := path.Join("api", "storageinfo")
 
 	requestFullUrl, err := servicesutils.BuildArtifactoryUrl(artAuth.GetUrl(), restApi, nil)
 
-	fmt.Print("Getting system info from: ", requestFullUrl)
+	fmt.Println("Getting system info from: ", requestFullUrl)
 
 	resp, body, _, err := client.SendGet(requestFullUrl, true, &httpClientsDetails)
 
