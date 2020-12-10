@@ -119,8 +119,8 @@ func barGraph(w http.ResponseWriter, artInfo string) {
 	bar := charts.NewBar()
 	// set some global options like Title/Legend/ToolTip or anything else
 	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
-		Title:    "Number of Artifacts",
-		Subtitle: "Most recently published artifacts",
+		Title:    "Repos Size By Type",
+		Subtitle: "Displays Repos by the Type and Size",
 	}))
 
 	// in := []byte(artInfo)
@@ -168,7 +168,7 @@ func barGraph(w http.ResponseWriter, artInfo string) {
 	// //fmt.Println(rtStorage.Name, rtStorage.fileStoreSummary, rtStorage.Id)
 
 	// Put data into instance
-	bar.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
+	bar.SetXAxis([]string{"Docker", "Maven", "NPM", "Nuget", "PyPi", "RPM", "Debain"}).
 		AddSeries("Category A", generateBarItems()).
 		AddSeries("Category B", generateBarItems())
 	// Where the magic happens
@@ -189,7 +189,7 @@ func lineGraph(w http.ResponseWriter) {
 		}))
 
 	// Put data into instance
-	line.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
+	line.SetXAxis([]string{"Docker", "Maven", "NPM", "Nuget", "PyPi", "RPM", "Debain"}).
 		AddSeries("Category A", generateLineItems()).
 		AddSeries("Category B", generateLineItems()).
 		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
@@ -222,21 +222,21 @@ func httpserver(w http.ResponseWriter, r *http.Request) {
 	//var repoInfo = getArtifactoryRepo(newArtDetails)
 
 	barGraph(w, storageinfo)
-	lineGraph(w)
+	//lineGraph(w)
 
-	if r.URL.Path != "/artifacts.html" {
-		http.Error(w, "404 not found.", http.StatusNotFound)
-		return
-	}
+	// if r.URL.Path != "/artifacts.html" {
+	// 	http.Error(w, "404 not found.", http.StatusNotFound)
+	// 	return
+	// }
 
-	if r.URL.Path != "/transfers.html" {
-		http.Error(w, "404 not found.", http.StatusNotFound)
-		return
-	}
+	// if r.URL.Path != "/transfers.html" {
+	// 	http.Error(w, "404 not found.", http.StatusNotFound)
+	// 	return
+	// }
 
-	if r.Method != "GET" {
-		http.Error(w, "Method is not supported.", http.StatusNotFound)
-		return
-	}
+	// if r.Method != "GET" {
+	// 	http.Error(w, "Method is not supported.", http.StatusNotFound)
+	// 	return
+	// }
 
 }
